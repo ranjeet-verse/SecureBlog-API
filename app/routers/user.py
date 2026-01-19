@@ -7,9 +7,10 @@ from ..schema import schemas
 from typing import List
 
 
-router = APIRouter()
+router = APIRouter(prefix="/user",
+                    tags=["User"])
 
-@router.post("/user",status_code=status.HTTP_201_CREATED, response_model=schemas.UserResponse)
+@router.post("/create",status_code=status.HTTP_201_CREATED, response_model=schemas.UserResponse)
 def create_user(
     user: schemas.CreateUser,
     db: Session = Depends(get_db)
@@ -32,7 +33,7 @@ def create_user(
     role = (
         models.UserRole.admin
         if user_count == 0
-        else models.UserRole.member
+        else models.UserRole.user
     )
 
     new_user = models.User(
@@ -59,7 +60,7 @@ def create_user(
     }
 
 
-@router.get('/', response_model=List[schemas.UserResponse])
+@router.get('/all', response_model=List[schemas.UserResponse])
 def get_all_users(db: Session = Depends(get_db), current_user: models.User = Depends(oauth2.admin_only)):
 
     users = db.query(models.User).all()

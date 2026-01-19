@@ -19,6 +19,32 @@ def get_all_posts(db: Session = Depends(get_db), current_user: models.User = Dep
 
     return posts
 
+
+@router.get("/single/{id}", response_model=schemas.PostResponse)
+def get_one_post(
+    id: int,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(oauth2.get_current_user)
+):
+    post = (
+        db.query(models.Post)
+        .filter(
+            models.Post.id == id,
+            models.Post.owner_id == current_user.id
+        )
+        .first()
+    )
+
+    if not post:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Post not found"
+        )
+
+    return post
+
+
+
 @router.get('/own', response_model=List[schemas.PostResponse])
 def get_own_post(db: Session = Depends(get_db), current_user: models.User = Depends(oauth2.get_current_user)):
 
