@@ -26,15 +26,16 @@ class UserOut(BaseModel):
     role: str
     created_at: datetime
 
-    model_config = {
-        "from_attributes": True
-    }
-
+    class Config:
+        from_attributes = True 
 
 class UserResponse(BaseModel):
     user: UserOut
     access_token: str
     token_type: str
+
+    class Config:
+        from_attributes = True 
 
 
 
